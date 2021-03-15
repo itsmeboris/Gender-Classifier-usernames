@@ -29,6 +29,7 @@ def plot_history(history, name):
     plt.plot(x, val_loss, 'r', label='Validation loss')
     plt.title(f'Training and validation loss on {name}')
     plt.legend()
+    plt.savefig(f'images/{name}_lstm_train', bbox_inches="tight", transparent=True)
     plt.show()
 
 
@@ -72,8 +73,8 @@ def load_vectors():
 
 def train():
     vectors = load_vectors()
-    max_len = 10
-    training_names = ['fxp', 'twitter', 'training']
+    max_len = 18
+    training_names = ['training']  # 'fxp', 'twitter', 'training']
     for name in training_names:
         df = pd.read_csv(f'datasets/{name}_users.csv')
         if debug:
@@ -100,8 +101,6 @@ def train():
         model.add(Dropout(0.2))
         model.add(LSTM(512, return_sequences=False))
         model.add(Dropout(0.2))
-        model.add(Dense(200))
-        model.add(Dense(100))
         model.add(Dense(2))
         model.add(Activation('softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -112,12 +111,12 @@ def train():
         batch_size = len(train) // 100
         history = model.fit(train_X, train_Y, batch_size=batch_size, epochs=epochs, validation_data=(test_X, test_Y))
         plot_history(history, name)
+        model.save(f'{name}_lstm.h5')
+
         _, accuracy = model.evaluate(train_X, train_Y, verbose=False)
         print("Training Accuracy: {:.4f}".format(accuracy))
         _, accuracy = model.evaluate(test_X, test_Y, verbose=False)
         print("Testing Accuracy:  {:.4f}".format(accuracy))
-
-        model.save(f'{name}_lstm.h5')
 
 
 train()

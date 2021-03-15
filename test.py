@@ -9,9 +9,9 @@ from sklearn.metrics import accuracy_score
 labels = ['male', 'female']
 
 vectors = load_vectors()
-max_len = 10
+max_len = 18
 
-test_name = 'fxp'
+test_name = 'okcupid'
 training_names = ['fxp', 'twitter', 'training']
 
 df = pd.read_csv(f'datasets/{test_name}_users.csv')
