@@ -8,7 +8,7 @@ tqdm.pandas()
 
 data_set = 'training'
 
-path_to_train = f'{data_set}_users.csv'
+path_to_train = f'datasets/{data_set}_users.csv'
 
 users = tc.SFrame.read_csv(path_to_train, delimiter=',')
 users = users.rename({'user_name': 'name'})
