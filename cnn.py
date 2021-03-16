@@ -6,13 +6,12 @@ from keras.layers import LSTM
 from keras.layers.core import Activation, Dropout
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 
 plt.style.use('ggplot')
 
-debug = False
 
-
-def plot_history(history, name):
+def plot_history(history, name, max_len):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
@@ -29,11 +28,12 @@ def plot_history(history, name):
     plt.plot(x, val_loss, 'r', label='Validation loss')
     plt.title(f'Training and validation loss on {name}')
     plt.legend()
-    plt.savefig(f'images/{name}_lstm_train', bbox_inches="tight", transparent=True)
+    plt.savefig(f'images/{name}_lstm_{max_len}_train', bbox_inches="tight", transparent=True)
     plt.show()
+    print(f'Accuracy score of {max(val_acc)} was achieved')
 
 
-def turn_to_vectors(df, max_len, vectors):
+def turn_to_vectors(df, max_len, vectors, debug=False):
     X, Y = [], []
     trunc_train_name = [str(i)[0:max_len] for i in df.name]
     for i in trunc_train_name:
@@ -71,10 +71,17 @@ def load_vectors():
     return vectors
 
 
-def train():
-    vectors = load_vectors()
-    max_len = 18
-    training_names = ['training']  # 'fxp', 'twitter', 'training']
+def checkpoint(name, max_len):
+    return tf.keras.callbacks.ModelCheckpoint(f'Models/{name}_lstm_{max_len}.h5',
+                                              monitor='val_accuracy', verbose=1,
+                                              save_best_only=True, mode='max')
+
+
+def train(debug=False, vectors=None, max_len=30, epochs=50):
+    if vectors is None:
+        vectors = load_vectors()
+    vector_size = len(vectors['0'][0])
+    training_names = ['fxp', 'twitter', 'training', 'okcupid']
     for name in training_names:
         df = pd.read_csv(f'datasets/{name}_users.csv')
         if debug:
@@ -89,34 +96,37 @@ def train():
 
         df = pd.concat([female, male])[['name', 'gender']]
         train, test = train_test_split(df, train_size=0.8)
-        print(train.gender.value_counts())
-        print(test.gender.value_counts())
+        if debug:
+            print(train.gender.value_counts())
+            print(test.gender.value_counts())
 
         train_X, train_Y = turn_to_vectors(train, max_len, vectors)
         test_X, test_Y = turn_to_vectors(test, max_len, vectors)
 
+        n_s = len(df)
+        n_i = vector_size
+        n_o = max_len
+        alpha = 2
+        hidden_layer_size = n_s // (alpha * (n_i + n_o))
+        print(f'Number of hidden layers is: {hidden_layer_size}')
+
         print('Build model...')
         model = Sequential()
-        model.add(LSTM(512, return_sequences=True, input_shape=(max_len, 300)))
+        model.add(LSTM(512, return_sequences=False, input_shape=(max_len, vector_size)))
         model.add(Dropout(0.2))
-        model.add(LSTM(512, return_sequences=False))
-        model.add(Dropout(0.2))
+        # model.add(LSTM(512, return_sequences=False))
+        # model.add(Dropout(0.2))
+        # model.add(Dense(hidden_layer_size, activation='relu'))
         model.add(Dense(2))
         model.add(Activation('softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         if debug:
             model.summary()
 
-        epochs = 50
         batch_size = len(train) // 100
-        history = model.fit(train_X, train_Y, batch_size=batch_size, epochs=epochs, validation_data=(test_X, test_Y))
-        plot_history(history, name)
-        model.save(f'{name}_lstm.h5')
-
-        _, accuracy = model.evaluate(train_X, train_Y, verbose=False)
-        print("Training Accuracy: {:.4f}".format(accuracy))
-        _, accuracy = model.evaluate(test_X, test_Y, verbose=False)
-        print("Testing Accuracy:  {:.4f}".format(accuracy))
+        history = model.fit(train_X, train_Y, batch_size=batch_size, epochs=epochs, validation_data=(test_X, test_Y),
+                            callbacks=checkpoint(name, max_len), verbose=0)
+        plot_history(history, name, max_len)
 
 
-train()
+train(debug=False, vectors=load_vectors(), max_len=18, epochs=100)
