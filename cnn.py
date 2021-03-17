@@ -11,6 +11,14 @@ import tensorflow as tf
 plt.style.use('ggplot')
 
 
+def male_female_split(df, factor):
+    female = df[df['gender'] == 'female']
+    male = df[df['gender'] == 'male']
+    msk = np.random.rand(len(male)) < factor
+    male, rest = male[msk], male[~msk]
+    return pd.concat([female, male])[['name', 'gender']]
+
+
 def plot_history(history, name, max_len):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
@@ -49,7 +57,6 @@ def turn_to_vectors(df, max_len, vectors, debug=False):
     if debug:
         print(np.asarray(X).shape)
         print(np.asarray(Y).shape)
-
     return np.asarray(X), np.asarray(Y)
 
 
@@ -87,14 +94,8 @@ def train(debug=False, vectors=None, max_len=30, epochs=50):
         if debug:
             print(df.groupby('gender')['name'].count())
         df['name'] = df.name.apply(lambda name: ','.join(name.split(' ')))
-        female = df[df['gender'] == 'female']
-        male = df[df['gender'] == 'male']
-
         if name is 'fxp':
-            msk = np.random.rand(len(male)) < 0.12
-            male, rest = male[msk], male[~msk]
-
-        df = pd.concat([female, male])[['name', 'gender']]
+            df = male_female_split(df, 0.12)
         train, test = train_test_split(df, train_size=0.8)
         if debug:
             print(train.gender.value_counts())
@@ -102,21 +103,20 @@ def train(debug=False, vectors=None, max_len=30, epochs=50):
 
         train_X, train_Y = turn_to_vectors(train, max_len, vectors)
         test_X, test_Y = turn_to_vectors(test, max_len, vectors)
-
+        """
+        In case you want a good number of hidden layers use this
+        formula to calculate it.
         n_s = len(df)
         n_i = vector_size
         n_o = max_len
         alpha = 2
         hidden_layer_size = n_s // (alpha * (n_i + n_o))
         print(f'Number of hidden layers is: {hidden_layer_size}')
-
+        """
         print('Build model...')
         model = Sequential()
         model.add(LSTM(512, return_sequences=False, input_shape=(max_len, vector_size)))
         model.add(Dropout(0.2))
-        # model.add(LSTM(512, return_sequences=False))
-        # model.add(Dropout(0.2))
-        # model.add(Dense(hidden_layer_size, activation='relu'))
         model.add(Dense(2))
         model.add(Activation('softmax'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -128,5 +128,4 @@ def train(debug=False, vectors=None, max_len=30, epochs=50):
                             callbacks=checkpoint(name, max_len), verbose=0)
         plot_history(history, name, max_len)
 
-
-train(debug=False, vectors=load_vectors(), max_len=18, epochs=100)
+# train(debug=False, vectors=load_vectors(), max_len=18, epochs=100)
