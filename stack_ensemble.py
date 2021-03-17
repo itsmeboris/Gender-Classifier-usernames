@@ -42,8 +42,9 @@ def define_stacked_model(members):
     # concatenate merge output from each model
     ensemble_outputs = [model.output for model in members]
     merge = concatenate(ensemble_outputs)
-    hidden = Dense(10, activation='relu')(merge)
-    output = Dense(2, activation='softmax')(hidden)
+    hidden_1 = Dense(10, activation='relu')(merge)
+    hidden_2 = Dense(10, activation='relu')(hidden_1)
+    output = Dense(2, activation='softmax')(hidden_2)
     model = Model(inputs=ensemble_visible, outputs=output)
     # plot graph of ensemble
     # plot_model(model, show_shapes=True, to_file='model_graph.png')
@@ -63,14 +64,15 @@ def fit_stacked_model(model, df, vectors):
     # encode output data
     # fit model
     batch_size = len(train) // 100
-    history = model.fit(X, train_Y, batch_size=batch_size, epochs=50, verbose=1, callbacks=checkpoint('stacked_ensemble', max_len), validation_data=(test_X, test_Y))
+    history = model.fit(X, train_Y, batch_size=batch_size, epochs=100, verbose=1,
+                        callbacks=checkpoint('stacked_ensemble', max_len), validation_data=(test_X, test_Y))
     plot_history(history, 'stacked_ensemble', max_len)
 
 
 # make a prediction with a stacked model
-def predict_stacked_model(model, inputX):
+def predict_stacked_model(model, input_x):
     # prepare input data
-    X = [inputX for _ in range(len(model.input))]
+    X = [input_x for _ in range(len(model.input))]
     # make prediction
     return model.predict(X, verbose=1)
 
