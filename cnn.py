@@ -62,11 +62,14 @@ class VectorCnn:
                                  callbacks=checkpoint(self.train_name, max_len), verbose=0)
         self.history = history
 
-    def show_history(self):
+    def show_history(self, name=None):
         """
         Plot the training history of the model
         """
-        plot_history(self.history, self.train_name, max_len)
+        if name is None:
+            plot_history(self.history, self.train_name)
+        else:
+            plot_history(self.history, name)
 
     def predict_stacked_model(self, X):
         """

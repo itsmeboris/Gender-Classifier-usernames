@@ -32,7 +32,7 @@ def load_split_data(name, debug=False):
     return df
 
 
-def plot_history(history, name, max_len):
+def plot_history(history, name):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
@@ -92,7 +92,7 @@ def load_vectors():
 
 
 def checkpoint(name, max_len):
-    return tf.keras.callbacks.ModelCheckpoint(f'Models/{name}_lstm_{max_len}.h5',
+    return tf.keras.callbacks.ModelCheckpoint(f'Models/temp_models/{name}_lstm_{max_len}.h5',
                                               monitor='val_accuracy', verbose=1,
                                               save_best_only=True, mode='max')
 
@@ -144,6 +144,15 @@ def plot_test(df, y_true_label, y_predicted_label):
     plt.ylabel('True')
     plt.show()
     print(f'The accuracy of the classifier {y_predicted_label} is: {accuracy_score(y_true, y_pred)}')
+
+
+def save_best_model(models, train_name):
+    val_accuracies = [max(model.history.history['val_accuracy']) for _, model in models.items()]
+    highest_accuracy = max(val_accuracies)
+    index = val_accuracies.index(highest_accuracy)
+    best_model = models[index]
+    best_model.model.save(f'Models/{train_name}_lstm_{max_len}.h5')
+    best_model.show_history(train_name)
 
 
 labels = ['male', 'female']

@@ -1,6 +1,6 @@
 from utility import *
 # data set to check accuracy on
-test_name = 'okcupid'
+test_name = 'twitter'
 # load the dataframe
 df = load_split_data(test_name)
 # split the data into vectors

@@ -83,7 +83,7 @@ class StackedEnsemble:
         """
         Plot the training history of the model
         """
-        plot_history(self.history, self.train_name, max_len)
+        plot_history(self.history, 'stacked_ensemble')
 
     # make a prediction with a stacked model
     def predict_stacked_model(self, input_x):
