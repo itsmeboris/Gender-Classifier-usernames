@@ -72,9 +72,9 @@ class VectorCnn:
         else:
             plot_history(self.history, name)
 
-    def predict_stacked_model(self, X):
+    def predict_stacked_model(self, x):
         """
-        :param X: Data to predict
+        :param x: Data to predict
         :return: predicted values
         """
-        return self.model.predict(X, verbose=1)
+        return self.model.predict(x, verbose=1)

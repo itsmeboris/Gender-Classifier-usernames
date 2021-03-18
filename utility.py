@@ -167,8 +167,8 @@ def save_best_model(models, train_name):
 
 
 labels = ['male', 'female']
-all_sets = ['fxp', 'twitter', 'okcupid', 'training', 'anime']
-training_names = ['fxp', 'twitter', 'okcupid', 'training', 'anime']
+all_sets = ['fxp', 'twitter', 'okcupid', 'entity', 'anime']
+training_names = ['fxp', 'twitter', 'okcupid', 'entity', 'anime']
 max_len = 18
 threshold = 200000
 vectors = load_vectors()

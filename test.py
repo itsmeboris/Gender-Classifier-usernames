@@ -1,9 +1,11 @@
 from utility import *
 
 
-def test_models():
-    # data set to check accuracy on
-    test_name = 'twitter'
+def test_models(test_name):
+    """
+    Test all models on a test set
+    :param test_name: the data set to test on
+    """
     # load the dataframe
     df = load_split_data(test_name)
     # split the data into vectors

@@ -2,12 +2,14 @@ from cnn import VectorCnn
 from test import test_models
 from stack_ensemble import StackedEnsemble
 from utility import *
+from tqdm import tqdm
 
 test_name = 'twitter'
 epochs = 70
 for train_name in training_names:
+    print(f'Starting to train on {train_name}')
     models = {}
-    for i in range(10):
+    for i in tqdm(range(10)):
         df = load_split_data(train_name, False)
         train, test = train_test_split(df, train_size=0.8)
 
@@ -18,7 +20,8 @@ for train_name in training_names:
     save_best_model(models, train_name)
 
 models = {}
-for i in range(10):
+print(f'Starting to train stacked ensemble')
+for i in tqdm(range(10)):
     df = load_split_data(test_name, False)
     train, test = train_test_split(df, train_size=0.8)
 
@@ -28,4 +31,4 @@ for i in range(10):
     models[i] = stacked
 save_best_model(models, test_name)
 
-test_models()
+test_models(test_name)
