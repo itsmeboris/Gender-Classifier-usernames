@@ -1,4 +1,5 @@
 from cnn import VectorCnn
+from test import test_models
 from stack_ensemble import StackedEnsemble
 from utility import *
 
@@ -26,3 +27,5 @@ for i in range(10):
     stacked.fit_model(train, test)
     models[i] = stacked
 save_best_model(models, test_name)
+
+test_models()
