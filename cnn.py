@@ -30,7 +30,8 @@ class VectorCnn:
         alpha = 2
         hidden_layer_size = n_s // (alpha * (n_i + n_o))
         """
-        print('Build model...')
+        if self.debug:
+            print('Build model...')
         model = Sequential()
         model.add(LSTM(512, return_sequences=False, input_shape=(max_len, vector_size)))
         model.add(Dropout(0.2))

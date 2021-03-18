@@ -26,8 +26,9 @@ class StackedEnsemble:
     # define stacked model from multiple member input models
     def build_model(self):
         # update all layers in all models to not be trainable
-        print('Build model...')
-        print('Starting to change layer names to unique names')
+        if self.debug:
+            print('Build model...')
+            print('Starting to change layer names to unique names')
         for i in range(self.len_members):
             model = self.members[i]
             model.input._name = 'ensemble_' + str(i + 1) + '_' + model.input.name
@@ -40,7 +41,8 @@ class StackedEnsemble:
                 # rename to avoid 'unique layer name' issue
                 layer._name = 'ensemble_' + str(i + 1) + '_' + layer.name
             self.members[i] = model
-        print('Done changing names')
+        if self.debug:
+            print('Done changing names')
         # define multi-headed input
         ensemble_visible = [model.input for model in self.members]
         # concatenate merge output from each model
@@ -75,7 +77,7 @@ class StackedEnsemble:
         # encode output data
         # fit model
         batch_size = len(train) // 100
-        history = self.model.fit(X, train_Y, batch_size=batch_size, epochs=self.epochs, verbose=1,
+        history = self.model.fit(X, train_Y, batch_size=batch_size, epochs=self.epochs, verbose=0,
                                  callbacks=checkpoint('stacked_ensemble', max_len), validation_data=(test_X, test_Y))
         self.history = history
 

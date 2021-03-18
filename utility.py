@@ -54,6 +54,16 @@ def plot_history(history, name):
     print(f'Accuracy score of {max(val_acc)} was achieved')
 
 
+def plot_data(val_acc, train_name):
+    index = list(range(1, len(val_acc) + 1))
+    plt.figure(figsize=(12, 5))
+    plt.plot(index, val_acc, 'b', label='Training acc')
+    plt.title(f'10-Fold accuracy scores')
+    plt.legend()
+    plt.savefig(f'images/{train_name}_10_fold_accuracy_score', bbox_inches="tight", transparent=True)
+    plt.show()
+
+
 def turn_to_vectors(df, max_len, vectors, debug=False):
     X, Y = [], []
     trunc_train_name = [str(i)[0:max_len] for i in df.name]
@@ -93,7 +103,7 @@ def load_vectors():
 
 def checkpoint(name, max_len):
     return tf.keras.callbacks.ModelCheckpoint(f'Models/temp_models/{name}_lstm_{max_len}.h5',
-                                              monitor='val_accuracy', verbose=1,
+                                              monitor='val_accuracy', verbose=0,
                                               save_best_only=True, mode='max')
 
 
@@ -147,9 +157,10 @@ def plot_test(df, y_true_label, y_predicted_label):
 
 
 def save_best_model(models, train_name):
-    val_accuracies = [max(model.history.history['val_accuracy']) for _, model in models.items()]
-    highest_accuracy = max(val_accuracies)
-    index = val_accuracies.index(highest_accuracy)
+    val_acc = [max(model.history.history['val_accuracy']) for _, model in models.items()]
+    plot_data(val_acc, train_name)
+    highest_accuracy = max(val_acc)
+    index = val_acc.index(highest_accuracy)
     best_model = models[index]
     best_model.model.save(f'Models/{train_name}_lstm_{max_len}.h5')
     best_model.show_history(train_name)
