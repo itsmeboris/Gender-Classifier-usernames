@@ -78,14 +78,17 @@ class StackedEnsemble:
         # fit model
         batch_size = len(train) // 100
         history = self.model.fit(X, train_Y, batch_size=batch_size, epochs=self.epochs, verbose=0,
-                                 callbacks=checkpoint('stacked_ensemble', max_len), validation_data=(test_X, test_Y))
+                                 callbacks=checkpoint(self.train_name, max_len), validation_data=(test_X, test_Y))
         self.history = history
 
-    def show_history(self):
+    def show_history(self, name=None):
         """
         Plot the training history of the model
         """
-        plot_history(self.history, 'stacked_ensemble')
+        if name is None:
+            plot_history(self.history, self.train_name)
+        else:
+            plot_history(self.history, name)
 
     # make a prediction with a stacked model
     def predict_stacked_model(self, input_x):

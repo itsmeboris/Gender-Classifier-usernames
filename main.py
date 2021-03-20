@@ -1,5 +1,4 @@
 from cnn import VectorCnn
-from test import test_models
 from stack_ensemble import StackedEnsemble
 from utility import *
 from tqdm import tqdm
@@ -12,7 +11,6 @@ for train_name in training_names:
     for i in tqdm(range(10)):
         df = load_split_data(train_name, False)
         train, test = train_test_split(df, train_size=0.8)
-
         cnn = VectorCnn(f'{train_name}_{i}', epochs)
         cnn.build_model()
         cnn.fit_model(train, test)
@@ -25,10 +23,9 @@ for i in tqdm(range(10)):
     df = load_split_data(test_name, False)
     train, test = train_test_split(df, train_size=0.8)
 
-    stacked = StackedEnsemble(list(set(all_sets) - {test_name}), test_name, epochs)
+    stacked = StackedEnsemble(all_sets, f'stacked_ensemble_{i}', epochs)
+    # stacked = StackedEnsemble(list(set(all_sets) - {test_name}), f'stacked_ensemble_{i}', epochs)
     stacked.build_model()
     stacked.fit_model(train, test)
     models[i] = stacked
-save_best_model(models, test_name)
-
-test_models(test_name)
+save_best_model(models, 'stacked_ensemble')
