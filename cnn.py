@@ -77,4 +77,4 @@ class VectorCnn:
         :param x: Data to predict
         :return: predicted values
         """
-        return self.model.predict(x, verbose=1)
+        return self.model.predict(x, verbose=0)

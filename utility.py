@@ -28,7 +28,7 @@ def load_split_data(name, debug=False):
     if name is 'fxp':
         df = male_female_split(df, 0.12)
     if len(df) > threshold:
-        df, _ = train_test_split(df, train_size=0.8)
+        df, _ = train_test_split(df, train_size=0.4)
     return df
 
 
@@ -117,7 +117,7 @@ def load_all_models(models):
         model = load_model(filename)
         # add to list of members
         all_models.append(model)
-        print('>loaded %s' % filename)
+        # print('>loaded %s' % filename)
     return all_models
 
 
@@ -132,7 +132,7 @@ def predict_stacked_model(model, input_x):
     # prepare input data
     X = [input_x for _ in range(len(model.input))]
     # make prediction
-    return model.predict(X, verbose=1)
+    return model.predict(X, verbose=0)
 
 
 def get_labels(predicted):
@@ -142,17 +142,17 @@ def get_labels(predicted):
 def plot_test(df, y_true_label, y_predicted_label):
     y_true = list(df[y_true_label])
     y_pred = list(df[y_predicted_label])
-    cm = confusion_matrix(y_true, y_pred, labels=labels)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    cax = ax.matshow(cm)
-    plt.title(f'Confusion matrix of the classifier {y_predicted_label}')
-    fig.colorbar(cax)
-    ax.set_xticklabels([''] + labels)
-    ax.set_yticklabels([''] + labels)
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
-    plt.show()
+    # cm = confusion_matrix(y_true, y_pred, labels=labels)
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111)
+    # cax = ax.matshow(cm)
+    # plt.title(f'Confusion matrix of the classifier {y_predicted_label}')
+    # fig.colorbar(cax)
+    # ax.set_xticklabels([''] + labels)
+    # ax.set_yticklabels([''] + labels)
+    # plt.xlabel('Predicted')
+    # plt.ylabel('True')
+    # plt.show()
     print(f'The accuracy of the classifier {y_predicted_label} is: {accuracy_score(y_true, y_pred)}')
 
 
@@ -168,7 +168,7 @@ def save_best_model(models, train_name):
 
 labels = ['male', 'female']
 all_sets = ['fxp', 'twitter', 'okcupid', 'entity', 'anime']
-training_names = ['fxp', 'twitter', 'okcupid', 'entity', 'anime']
+training_names = ['fxp', 'twitter', 'okcupid']
 max_len = 18
 threshold = 200000
 vectors = load_vectors()
