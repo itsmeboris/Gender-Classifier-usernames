@@ -99,4 +99,4 @@ class StackedEnsemble:
         # prepare input data
         X = [input_x for _ in range(len(self.model.input))]
         # make prediction
-        return self.model.predict(X, verbose=1)
+        return self.model.predict(X, verbose=0)

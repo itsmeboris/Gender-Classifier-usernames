@@ -1,0 +1,56 @@
+Testing on: fxp
+--------------------------------------------------------------------------------
+312/312 [==============================] - 5s 6ms/step
+The accuracy of the classifier fxp is: 0.6247620955624562
+312/312 [==============================] - 2s 6ms/step
+The accuracy of the classifier twitter is: 0.5672643493939697
+312/312 [==============================] - 2s 6ms/step
+The accuracy of the classifier okcupid is: 0.5845938094761094
+312/312 [==============================] - 2s 6ms/step
+The accuracy of the classifier entity is: 0.594610838425323
+312/312 [==============================] - 2s 6ms/step
+The accuracy of the classifier anime is: 0.6091355304016829
+The accuracy of the classifier ensemble is: 0.6144445557447661
+The accuracy of the classifier stacked_fxp is: 0.6551136932785736
+The accuracy of the classifier stacked_twitter is: 0.5941099869778623
+The accuracy of the classifier stacked_okcupid is: 0.6043273565060603
+The accuracy of the classifier stacked_anime is: 0.6086346789542222
+--------------------------------------------------------------------------------
+Testing on: twitter
+--------------------------------------------------------------------------------
+386/386 [==============================] - 3s 6ms/step
+The accuracy of the classifier fxp is: 0.510419200518933
+386/386 [==============================] - 3s 6ms/step
+The accuracy of the classifier twitter is: 0.6679639990270008
+386/386 [==============================] - 3s 6ms/step
+The accuracy of the classifier okcupid is: 0.6288007783994162
+386/386 [==============================] - 3s 6ms/step
+The accuracy of the classifier entity is: 0.610800291899781
+386/386 [==============================] - 3s 6ms/step
+The accuracy of the classifier anime is: 0.6356928565636909
+The accuracy of the classifier ensemble is: 0.6499635125273656
+The accuracy of the classifier stacked_fxp is: 0.5872050595962053
+The accuracy of the classifier stacked_twitter is: 0.6902618989702425
+The accuracy of the classifier stacked_okcupid is: 0.636260439471337
+The accuracy of the classifier stacked_anime is: 0.6393416038271305
+--------------------------------------------------------------------------------
+Testing on: okcupid
+--------------------------------------------------------------------------------
+1536/1536 [==============================] - 10s 6ms/step
+The accuracy of the classifier fxp is: 0.5515017092625752
+1536/1536 [==============================] - 10s 6ms/step
+The accuracy of the classifier twitter is: 0.5723384339899072
+1536/1536 [==============================] - 10s 6ms/step
+The accuracy of the classifier okcupid is: 0.6731238808399804
+1536/1536 [==============================] - 10s 6ms/step
+The accuracy of the classifier entity is: 0.6236773563405502
+1536/1536 [==============================] - 10s 6ms/step
+The accuracy of the classifier anime is: 0.6341160670682077
+The accuracy of the classifier ensemble is: 0.6339125834282924
+The accuracy of the classifier stacked_fxp is: 0.6183867817027511
+The accuracy of the classifier stacked_twitter is: 0.6271976233110858
+The accuracy of the classifier stacked_okcupid is: 0.6807748657007977
+The accuracy of the classifier stacked_anime is: 0.6398746540778122
+--------------------------------------------------------------------------------
+
+Process finished with exit code 0
