@@ -27,8 +27,8 @@ def load_split_data(name, debug=False):
         df = male_female_split(df, 0.6)
     if name is 'fxp':
         df = male_female_split(df, 0.12)
-    if len(df) > threshold:
-        df, _ = train_test_split(df, train_size=0.4)
+    # if len(df) > threshold:
+    #     df, _ = train_test_split(df, train_size=0.3)
     return df
 
 
@@ -121,10 +121,10 @@ def load_all_models(models):
     return all_models
 
 
-def ensemble_label(row):
+def ensemble_label(row, prefix=''):
     d = {'male': 0, 'female': 0}
     for name in training_names:
-        d[row[name]] += 1
+        d[row[prefix + name]] += 1
     return max(d.items(), key=operator.itemgetter(1))[0]
 
 
@@ -153,7 +153,9 @@ def plot_test(df, y_true_label, y_predicted_label):
     # plt.xlabel('Predicted')
     # plt.ylabel('True')
     # plt.show()
-    print(f'The accuracy of the classifier {y_predicted_label} is: {accuracy_score(y_true, y_pred)}')
+    accuracy = accuracy_score(y_true, y_pred)
+    print(f'The accuracy of the classifier {y_predicted_label} is: {accuracy}')
+    return accuracy
 
 
 def save_best_model(models, train_name):
@@ -168,7 +170,7 @@ def save_best_model(models, train_name):
 
 labels = ['male', 'female']
 all_sets = ['fxp', 'twitter', 'okcupid', 'entity', 'anime']
-training_names = ['fxp', 'twitter', 'okcupid']
+training_names = ['fxp', 'twitter', 'okcupid', 'anime']
 max_len = 18
 threshold = 200000
 vectors = load_vectors()

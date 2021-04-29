@@ -77,7 +77,7 @@ class StackedEnsemble:
         # encode output data
         # fit model
         batch_size = len(train) // 100
-        history = self.model.fit(X, train_Y, batch_size=batch_size, epochs=self.epochs, verbose=0,
+        history = self.model.fit(X, train_Y, batch_size=batch_size, epochs=self.epochs, verbose=1,
                                  callbacks=checkpoint(self.train_name, max_len), validation_data=(test_X, test_Y))
         self.history = history
 

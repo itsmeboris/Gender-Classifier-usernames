@@ -33,8 +33,12 @@ class VectorCnn:
         if self.debug:
             print('Build model...')
         model = Sequential()
-        model.add(LSTM(512, return_sequences=False, input_shape=(max_len, vector_size)))
+        model.add(LSTM(512, activation='relu', return_sequences=False, input_shape=(max_len, vector_size)))
         model.add(Dropout(0.2))
+        # model.add(LSTM(512, activation='relu', return_sequences=True))
+        # model.add(Dropout(0.2))
+        # model.add(LSTM(512, activation='relu', return_sequences=False))
+        # model.add(Dropout(0.2))
         model.add(Dense(2))
         model.add(Activation('softmax'))
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -60,7 +64,7 @@ class VectorCnn:
         batch_size = len(train) // 100
         history = self.model.fit(train_X, train_Y, batch_size=batch_size, epochs=self.epochs,
                                  validation_data=(test_X, test_Y),
-                                 callbacks=checkpoint(self.train_name, max_len), verbose=0)
+                                 callbacks=checkpoint(self.train_name, max_len), verbose=1)
         self.history = history
 
     def show_history(self, name=None):
