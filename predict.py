@@ -11,7 +11,7 @@ def vec_generator(df, max_len, vectors, batch_size=64):
     while True:
         for batch in range(0, len(df), batch_size):
             X = []
-            trunc_train_name = [str(i)[0:max_len] for i in df.iloc[batch: batch+batch_size].name]
+            trunc_train_name = [str(i)[0:max_len] for i in df.iloc[batch: batch + batch_size].name]
             for i in trunc_train_name:
                 tmp = [vectors[j][0] for j in str(i)]
                 for k in range(0, max_len - len(str(i))):
@@ -30,15 +30,17 @@ for model_name in ['default', 'LSTM_CONV', 'gru_best', 'bid_GRU_bid_LSTM', 'bidi
     # predict using each model
     for model, name in zip(models, all_sets):
         # save in the corresponding column
-        df[name] = get_labels(model.predict(vec_generator(df, max_len, vectors, batch_size), batch_size,  verbose=1, steps=(len(df) // batch_size) + 1))
-        df.to_csv('datasets/email_list_predicted.csv', index=False)
+        df[f'{model_name}_{name}'] = get_labels(
+            model.predict(vec_generator(df, max_len, vectors, batch_size), batch_size, verbose=0,
+                          steps=(len(df) // batch_size) + 1))
     # perform ensemble of all the data
-    df['ensemble'] = df.apply(ensemble_label, axis=1)
+    df[f'ensemble_{model_name}'] = df.apply(lambda row: ensemble_label(row, f'{model_name}_'), axis=1)
     for stacked_model, name in zip(stacked_models, all_sets):
         # predict using the stacked model
-        df[f'stacked_{name}'] = get_labels(stacked_model.predict(vec_generator(df, max_len, vectors, batch_size), batch_size,  verbose=1, steps=(len(df) // batch_size) + 1))
-        df.to_csv('datasets/email_list_predicted.csv', index=False)
-    df['ensemble_stacked'] = df.apply(lambda row: ensemble_label(row, 'stacked_'), axis=1)
+        df[f'stacked_{model_name}_{name}'] = get_labels(
+            stacked_model.predict(vec_generator(df, max_len, vectors, batch_size), batch_size, verbose=0,
+                                  steps=(len(df) // batch_size) + 1))
+    df[f'ensemble_stacked_{model_name}'] = df.apply(lambda row: ensemble_label(row, f'stacked_{model_name}_'), axis=1)
     df.to_csv('datasets/email_list_predicted.csv', index=False)
 
 df.to_csv('datasets/email_list_predicted.csv', index=False)
