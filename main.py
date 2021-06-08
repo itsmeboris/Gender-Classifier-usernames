@@ -1,31 +1,30 @@
 from cnn import VectorCnn
 from stack_ensemble import StackedEnsemble
 from utility import *
-from tqdm import tqdm
 
-epochs = 70
-for train_name in all_sets:
-    print(f'Starting to train on {train_name}')
-    models = {}
-    for i in tqdm(range(10)):
-        df = load_split_data(train_name, False)
-        train, test = train_test_split(df, train_size=0.8)
-        cnn = VectorCnn(f'{train_name}_{i}', epochs, debug=True)
-        cnn.build_model()
-        cnn.fit_model(train, test)
-        models[i] = cnn
-    save_best_model(models, train_name)
+epochs = 200
+models = model_types
+model_name = 'gru_best'
+# for train_name in all_sets:
+#     print(f'Starting to train on {train_name}')
+#     models = []
+#     df = load_split_data(train_name, debug=False, split=True)
+#     train, test = train_test_split(df, train_size=0.8)
+#     cnn = VectorCnn(f'{train_name}_{model_name}', epochs, debug=False)
+#     cnn.build_model(model_name)
+#     cnn.fit_model(train, test)
+#     models.append(cnn)
+#     save_best_model(models, train_name + f'_{model_name}')
 
-for test_name in all_sets:
-    models = {}
+for test_name in all_sets[3:]:
+    models = []
     print(f'Starting to train stacked ensemble')
-    for i in tqdm(range(10)):
-        df = load_split_data(test_name, False)
-        train, test = train_test_split(df, train_size=0.8)
+    df = load_split_data(test_name, debug=False, split=True)
+    train, test = train_test_split(df, train_size=0.8)
 
-        stacked = StackedEnsemble(all_sets, f'stacked_ensemble_{test_name}_{i}', epochs, debug=True)
-        # stacked = StackedEnsemble(list(set(all_sets) - {test_name}), f'stacked_ensemble_{i}', epochs)
-        stacked.build_model()
-        stacked.fit_model(train, test)
-        models[i] = stacked
-    save_best_model(models, f'stacked_ensemble_{test_name}')
+    stacked = StackedEnsemble([set + f'_{model_name}' for set in all_sets], f'stacked_ensemble_{test_name}_{model_name}', epochs, debug=True)
+    # stacked = StackedEnsemble(list(set(all_sets) - {test_name}), f'stacked_ensemble_{i}', epochs)
+    stacked.build_model()
+    stacked.fit_model(train, test)
+    models.append(stacked)
+    save_best_model(models, f'stacked_ensemble_{test_name}_{model_name}')

@@ -1,5 +1,2 @@
 import tensorflow as tf
-
-with tf.compat.v1.Session() as sess:
-    devices = sess.list_devices()
-    print(devices)
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
