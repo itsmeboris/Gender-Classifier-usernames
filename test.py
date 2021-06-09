@@ -21,19 +21,22 @@ for model_name in model_types:
         # predict using each model
         for model, name in zip(models, all_sets):
             # save in the corresponding column
-            df[name] = get_labels(model.predict(test_X, verbose=1))
+            df[name] = get_labels(
+                model.predict(vec_generator(df, max_len, vectors, batch_size), batch_size, verbose=0,
+                              steps=(len(df) // batch_size) + 1))
             # plot the results and confusion matrix
-            accuracy = plot_test(df, 'gender', name)
-            results[test_name][name] = accuracy
+            results[test_name][name] = plot_test(df, 'gender', name)
         # perform ensemble of all the data
         df['ensemble'] = df.apply(ensemble_label, axis=1)
         # plot the results and confusion matrix
-        accuracy = plot_test(df, 'gender', 'ensemble')
-        results[test_name]['ensemble'] = accuracy
-        for stacked_model, name in zip(stacked_models, ['fxp', 'twitter', 'okcupid']):
+        results[test_name]['ensemble'] = plot_test(df, 'gender', 'ensemble')
+        for stacked_model, name in zip(stacked_models, all_sets):
             # predict using the stacked model
             try:
-                df[f'stacked_{name}'] = get_labels(predict_stacked_model(stacked_model, test_X))
+                df[f'stacked_{name}'] = get_labels(
+                    stacked_model.predict(vec_generator(df, max_len, vectors, batch_size, copies=5), batch_size,
+                                          verbose=0,
+                                          steps=(len(df) // batch_size) + 1))
                 # plot the results and confusion matrix
                 accuracy = plot_test(df, 'gender', f'stacked_{name}')
             except:

@@ -25,29 +25,51 @@ from randomness_testsuite.CumulativeSum import CumulativeSums as cst
 from randomness_testsuite.RandomExcursions import RandomExcursions as ret
 
 path = "datasets/"
-filename = "email_list_predicted.csv"
+filename = "email_list.csv"
 email_list = pd.read_csv(path + filename)
 email_list['password'] = email_list['password'].astype(str)
-email_list['binary_password'] = email_list['password'].apply(lambda x: Tools.string_to_binary(x))
+email_list['binary_password'] = email_list['password'].apply(Tools.string_to_binary)
 
-test_type = ['freq_test_monobit', 'freq_test_block', 'run_test', 'longest_one_block_test', 'binary_matrix_rank_text',
-             'sepctral_test',
-             'non_overlapping_test', 'overlapping_patterns', 'statistical_test', 'linear_complexity_test',
-             'serial_test', 'approximate_entropy_test',
-             'cumulative_sums_test', 'cumulative_sums_test', 'random_excursions_test', 'variant_test']
+test_type = [
+    'freq_test_monobit',
+    'freq_test_block',
+    'run_test',
+    'longest_one_block_test',
+    'binary_matrix_rank_text',
+    'sepctral_test',
+    'non_overlapping_test',
+    'overlapping_patterns',
+    'statistical_test',
+    'linear_complexity_test',
+    'serial_test',
+    'approximate_entropy_test',
+    'cumulative_sums_test',
+    'cumulative_sums_test',
+    'random_excursions_test',
+    'variant_test'
+]
 
 test_function = {
-    0: ft.monobit_test, 1: ft.block_frequency, 2: rt.run_test, 3: rt.longest_one_block_test,
-    4: mt.binary_matrix_rank_text, 5: st.sepctral_test,
-    6: tm.non_overlapping_test, 7: tm.overlapping_patterns, 8: ut.statistical_test, 9: ct.linear_complexity_test,
-    10: serial.serial_test,
-    11: aet.approximate_entropy_test, 12: cst.cumulative_sums_test, 13: cst.cumulative_sums_test,
-    14: ret.random_excursions_test, 15: ret.variant_test}
+    0: {'func': ft.monobit_test, 'name': 'freq_test_monobit'},
+    1: {'func': ft.block_frequency, 'name': 'freq_test_block'},
+    2: {'func': rt.run_test, 'name': 'run_test'},
+    3: {'func': rt.longest_one_block_test, 'name': 'longest_one_block_test'},
+    4: {'func': mt.binary_matrix_rank_text, 'name': 'binary_matrix_rank_text'},
+    5: {'func': st.sepctral_test, 'name': 'sepctral_test'},
+    6: {'func': tm.non_overlapping_test, 'name': 'non_overlapping_test'},
+    7: {'func': ft.monobit_test, 'name': 'overlapping_patterns'},
+    8: {'func': ut.statistical_test, 'name': 'statistical_test'},
+    9: {'func': ct.linear_complexity_test, 'name': 'linear_complexity_test'},
+    10: {'func': serial.serial_test, 'name': 'serial_test'},
+    11: {'func': aet.approximate_entropy_test, 'name': 'approximate_entropy_test'},
+    12: {'func': cst.cumulative_sums_test, 'name': 'cumulative_sums_test'},
+    13: {'func': cst.cumulative_sums_test, 'name': 'cumulative_sums_test'},
+    14: {'func': ret.random_excursions_test, 'name': 'random_excursions_test'},
+    15: {'func': ret.variant_test, 'name': 'variant_test'}
+}
 
-count = 0
-for test in test_function:
-    email_list[test_type[count % len(test_type)]] = email_list['binary_password'].apply(
-        lambda x: test_function[count](x))
-    count += 1
+for ind, test in test_function.items():
+    print(f"testing {test['name']}")
+    email_list[test['name']] = email_list['binary_password'].apply(test['func'])
 
 email_list.to_csv(path + "NIST_metrics_" + filename)

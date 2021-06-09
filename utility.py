@@ -49,7 +49,7 @@ def plot_history(history, name, use_metrics=None):
         plt.title(f'Training and validation {metric} on {name}')
         plt.legend()
         plt.savefig(f'images/{name}_lstm_{max_len}_train_{metric}', bbox_inches="tight", transparent=False)
-        plt.show()
+        plt.close()
     print(f"Accuracy score of {max(history.history['val_accuracy'])} was achieved")
 
 
@@ -60,7 +60,7 @@ def plot_data(val_acc, train_name):
     plt.title(f'10-Fold accuracy scores')
     plt.legend()
     plt.savefig(f'images/{train_name}_10_fold_accuracy_score', bbox_inches="tight", transparent=True)
-    plt.show()
+    plt.close()
 
 
 def turn_to_vectors(df, max_len, vectors, debug=False):
@@ -312,6 +312,19 @@ def get_model(name, recurrent_units=512, dropout_rate=0.3, recurrent_dropout_rat
     model.add(Flatten())
     model.add(Dense(nb_classes, activation='softmax'))
     return model
+
+
+def vec_generator(df, max_len, vectors, batch_size=64, copies=None):
+    while True:
+        for batch in range(0, len(df), batch_size):
+            X = []
+            trunc_train_name = [str(i)[0:max_len] for i in df.iloc[batch: batch + batch_size].name]
+            for i in trunc_train_name:
+                tmp = [vectors[j][0] for j in str(i)]
+                for k in range(0, max_len - len(str(i))):
+                    tmp.append(vectors['%'][0])
+                X.append(tmp)
+            yield np.asarray(X) if copies is None else [np.asarray(X) for _ in range(copies)]
 
 
 labels = ['male', 'female']

@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-for model_name in ['LSTM_CONV', 'gru_best', 'bid_GRU_bid_LSTM']:
+for model_name in ['default', 'LSTM_CONV', 'gru_best', 'bid_GRU_bid_LSTM', 'bidirectional_LSTM']:
     results = pd.read_csv(f'results_{model_name}.csv', index_col=0)
     results = results.transpose()
 
