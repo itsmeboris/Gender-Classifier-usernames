@@ -4,7 +4,7 @@ from utility import *
 warnings.filterwarnings("ignore")
 
 results = {}
-for model_name in model_types:
+for model_name in ['LSTM_CONV']:
     # load the stacked models
     stacked_models = load_all_models([f'stacked_ensemble_{name}_{model_name}' for name in all_sets])
     # test_name = 'twitter'
@@ -15,7 +15,7 @@ for model_name in model_types:
         # load the dataframe
         df = load_split_data(test_name)
         # split the data into vectors
-        test_X, test_Y = turn_to_vectors(df, max_len, vectors)
+        # test_X, test_Y = turn_to_vectors(df, max_len, vectors)
         # load all of the models
         models = load_all_models([set + f'_{model_name}' for set in all_sets])
         # predict using each model

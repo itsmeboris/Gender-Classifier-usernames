@@ -4,9 +4,8 @@ import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from keras.models import load_model
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from keras.layers import Dense, LSTM, GlobalMaxPool1D, GlobalAveragePooling1D, Input, concatenate, Attention, Dropout, \
+from keras.layers import Dense, LSTM, GlobalMaxPool1D, GlobalAveragePooling1D, Input, concatenate, Dropout, \
     Conv1D, Bidirectional, GRU, Activation, Add, MaxPooling1D, Flatten, AveragePooling1D
 from keras.models import Sequential, Model
 
@@ -138,7 +137,7 @@ def load_all_models(models):
             model = load_model(filename)
             # add to list of members
             all_models.append(model)
-        except OSError as oe:
+        except OSError:
             pass
         # print('>loaded %s' % filename)
     return all_models
@@ -183,7 +182,7 @@ def save_best_model(models, train_name):
     best_model.show_history(train_name)
 
 
-def get_DPCNN(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes):
+def get_DPCNN(recurrent_units, nb_classes):
     # DPCNN
     input_layer = Input(shape=(max_len, vector_size), )
     # X = Embedding(max_features, embed_size, weights=[embedding_matrix],
@@ -220,7 +219,7 @@ def get_DPCNN(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size,
     return model
 
 
-def get_gru_best(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes):
+def get_gru_best(recurrent_units, dropout_rate, dense_size, nb_classes):
     # gru_best
     input_layer = Input(shape=(max_len, vector_size), )
     x = Bidirectional(GRU(recurrent_units, return_sequences=True, dropout=dropout_rate,
@@ -237,7 +236,7 @@ def get_gru_best(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_si
     return model
 
 
-def get_LSTM_CONV(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes):
+def get_LSTM_CONV(recurrent_units, dropout_rate, dense_size, nb_classes):
     # LSTM + CONV
     input_layer = Input(shape=(max_len, vector_size))
     x = LSTM(recurrent_units, return_sequences=True, dropout=dropout_rate,
@@ -259,7 +258,7 @@ def get_LSTM_CONV(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_s
     return model
 
 
-def get_bidirectional_LSTM(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes):
+def get_bidirectional_LSTM(recurrent_units, dropout_rate, dense_size, nb_classes):
     # bidirectional_LSTM
     input_layer = Input(shape=(max_len, vector_size), )
     x = Bidirectional(LSTM(recurrent_units, return_sequences=True, dropout=dropout_rate,
@@ -296,13 +295,13 @@ def get_bid_GRU_bid_LSTM(recurrent_units, dropout_rate, recurrent_dropout_rate, 
 
 def get_model(name, recurrent_units=512, dropout_rate=0.3, recurrent_dropout_rate=0.3, dense_size=300, nb_classes=2):
     if name == 'DPCNN':
-        return get_DPCNN(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes)
+        return get_DPCNN(recurrent_units, nb_classes)
     if name == 'gru_best':
-        return get_gru_best(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes)
+        return get_gru_best(recurrent_units, dropout_rate, dense_size, nb_classes)
     if name == 'LSTM_CONV':
-        return get_LSTM_CONV(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes)
+        return get_LSTM_CONV(recurrent_units, dropout_rate, dense_size, nb_classes)
     if name == 'bidirectional_LSTM':
-        return get_bidirectional_LSTM(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes)
+        return get_bidirectional_LSTM(recurrent_units, dropout_rate, dense_size, nb_classes)
     if name == 'bid_GRU_bid_LSTM':
         return get_bid_GRU_bid_LSTM(recurrent_units, dropout_rate, recurrent_dropout_rate, dense_size, nb_classes)
     # Default
@@ -336,5 +335,5 @@ batch_size = 64
 vectors = load_vectors()
 vector_size = len(vectors['0'][0])
 VOCAB_SIZE = len(vectors)
-metrics = ['accuracy', 'loss']
+metrics = ['accuracy']
 model_types = ['default', 'LSTM_CONV', 'gru_best', 'bid_GRU_bid_LSTM', 'bidirectional_LSTM']

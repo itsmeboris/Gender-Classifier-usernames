@@ -1,7 +1,3 @@
-from keras.layers import Dense, LSTM, GlobalMaxPool1D, GlobalAveragePooling1D, Input, concatenate, Attention, Dropout, \
-    Conv1D, Bidirectional, GRU, Activation, Add, MaxPooling1D, Flatten
-from keras.models import Sequential, Model
-
 from utility import *
 
 
@@ -35,7 +31,7 @@ class VectorCnn:
         model.compile(
             loss='binary_crossentropy',
             optimizer='adam',
-            metrics=metrics[:-1])
+            metrics=metrics)
         # if self.debug:
         model.summary()
         self.model = model
@@ -53,12 +49,6 @@ class VectorCnn:
         if self.debug:
             print(train.gender.value_counts())
             print(test.gender.value_counts())
-        # train_X, train_Y = turn_to_vectors(train, max_len, vectors)
-        # test_X, test_Y = turn_to_vectors(test, max_len, vectors)
-        # batch_size = len(train) // 100
-        # history = self.model.fit(train_X, train_Y, batch_size=batch_size, epochs=self.epochs,
-        #                          validation_data=(test_X, test_Y),
-        #                          callbacks=checkpoint(self.train_name, max_len), verbose=self.debug)
         history = self.model.fit(
             turn_to_vectors_gen(train, max_len, vectors, batch_size),
             steps_per_epoch=len(train) // batch_size,
@@ -67,7 +57,9 @@ class VectorCnn:
             validation_data=turn_to_vectors_gen(test, max_len, vectors, batch_size),
             validation_batch_size=batch_size,
             validation_steps=len(test) // batch_size,
-            callbacks=checkpoint(self.train_name, max_len), verbose=self.debug)
+            callbacks=[checkpoint(self.train_name, max_len),
+                       tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)],
+            verbose=self.debug)
         self.history = history
 
     def show_history(self, name=None):

@@ -1,9 +1,3 @@
-from keras.models import Model
-from keras.layers import Dense
-from keras.layers.merge import concatenate
-# from keras.utils import plot_model
-
-
 from utility import *
 
 
@@ -59,10 +53,10 @@ class StackedEnsemble:
         model.compile(
             loss='binary_crossentropy',
             optimizer='adam',
-            metrics=metrics[:-1])
+            metrics=metrics)
         # if self.debug:
         model.summary()
-            # plot_model(model, show_shapes=True, to_file=f'stacked_model_graph_{self.train_name}.png')
+        # plot_model(model, show_shapes=True, to_file=f'stacked_model_graph_{self.train_name}.png')
         self.model = model
 
     # fit a stacked model
@@ -76,16 +70,6 @@ class StackedEnsemble:
             print('Please wait')
             self.build_model()
             print('Done building the model, starting to fit')
-        # train_X, train_Y = turn_to_vectors(train, max_len, vectors)
-        # test_X, test_Y = turn_to_vectors(test, max_len, vectors)
-        # # prepare input data
-        # X = [train_X for _ in range(len(self.model.input))]
-        # test_X = [test_X for _ in range(len(self.model.input))]
-        # # encode output data
-        # # fit model
-        # batch_size = len(train) // 100
-        # history = self.model.fit(X, train_Y, batch_size=batch_size, epochs=self.epochs, verbose=self.debug,
-        #                          callbacks=checkpoint(self.train_name, max_len), validation_data=(test_X, test_Y))
         history = self.model.fit(
             turn_to_vectors_gen(train, max_len, vectors, batch_size, copies=len(self.model.input)),
             steps_per_epoch=len(train) // batch_size,
@@ -94,7 +78,9 @@ class StackedEnsemble:
             validation_data=turn_to_vectors_gen(test, max_len, vectors, batch_size, copies=len(self.model.input)),
             validation_batch_size=batch_size,
             validation_steps=len(test) // batch_size,
-            callbacks=checkpoint(self.train_name, max_len), verbose=self.debug)
+            callbacks=[checkpoint(self.train_name, max_len),
+                       tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=5, restore_best_weights=True)],
+            verbose=self.debug)
         self.history = history
 
     def show_history(self, name=None):
